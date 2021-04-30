@@ -2,6 +2,19 @@ ESX = nil
 
 TriggerEvent('esx:getSharedObject', function(obj) ESX = obj end)
 
+local isMaskOn = false
+local playerMask = {}
+
+ESX.RegisterUsableItem('covidmask', function(source)	
+	isMaskOn = not isMaskOn	
+	if isMaskOn then	
+		playerMask[source] = 1
+	else
+		playerMask[source] = 0
+	end
+	TriggerClientEvent('ExeLds:wearMask', source, isMaskOn)	
+end)
+
 ESX.RegisterUsableItem('covidtest', function(source)
 	local xPlayer = ESX.GetPlayerFromId(source)
 	if xPlayer.job.name == 'ambulance' then
@@ -53,105 +66,107 @@ end)
 RegisterServerEvent('ExeLds:infectPlayer')
 AddEventHandler('ExeLds:infectPlayer', function(coords, closePlayers, value)
 	for i = 1, #closePlayers do	
-		local sans = math.random(1,100)
-		if value < 60 then
-			if sans > 55 and sans < 60 then
-				local xPlayer = ESX.GetPlayerFromId(closePlayers[i].id)
-				MySQL.Async.fetchAll('SELECT Corona FROM users WHERE identifier = @identifier',{['@identifier'] = xPlayer.identifier},
-					function(result)
-					if result[1].Corona == 0 then
-						MySQL.Sync.execute('UPDATE users SET Corona = @Corona WHERE identifier = @identifier',
-							{
-								['@Corona'] = 1,
-								['@identifier'] = xPlayer.identifier
-							})
-					end		
-				end)		
+		if playerMask[closePlayers[i].id] == 0 then
+			local sans = math.random(1,100)
+			if value < 60 then
+				if sans > 55 and sans < 60 then
+					local xPlayer = ESX.GetPlayerFromId(closePlayers[i].id)
+					MySQL.Async.fetchAll('SELECT Corona FROM users WHERE identifier = @identifier',{['@identifier'] = xPlayer.identifier},
+						function(result)
+						if result[1].Corona == 0 then
+							MySQL.Sync.execute('UPDATE users SET Corona = @Corona WHERE identifier = @identifier',
+								{
+									['@Corona'] = 1,
+									['@identifier'] = xPlayer.identifier
+								})
+						end		
+					end)		
+				end
+			elseif value < 120 then
+				if sans > 50 and sans < 60 then
+					local xPlayer = ESX.GetPlayerFromId(closePlayers[i].id)
+					MySQL.Async.fetchAll('SELECT Corona FROM users WHERE identifier = @identifier',{['@identifier'] = xPlayer.identifier},
+						function(result)
+						if result[1].Corona == 0 then
+							MySQL.Sync.execute('UPDATE users SET Corona = @Corona WHERE identifier = @identifier',
+								{
+									['@Corona'] = 1,
+									['@identifier'] = xPlayer.identifier
+								})
+						end		
+					end)		
+				end
+			elseif value < 180 then
+				if sans > 45 and sans < 60 then
+					local xPlayer = ESX.GetPlayerFromId(closePlayers[i].id)
+					MySQL.Async.fetchAll('SELECT Corona FROM users WHERE identifier = @identifier',{['@identifier'] = xPlayer.identifier},
+						function(result)
+						if result[1].Corona == 0 then
+							MySQL.Sync.execute('UPDATE users SET Corona = @Corona WHERE identifier = @identifier',
+								{
+									['@Corona'] = 1,
+									['@identifier'] = xPlayer.identifier
+								})
+						end		
+					end)		
+				end	
+			elseif value < 240 then
+				if sans > 40 and sans < 60 then
+					local xPlayer = ESX.GetPlayerFromId(closePlayers[i].id)
+					MySQL.Async.fetchAll('SELECT Corona FROM users WHERE identifier = @identifier',{['@identifier'] = xPlayer.identifier},
+						function(result)
+						if result[1].Corona == 0 then
+							MySQL.Sync.execute('UPDATE users SET Corona = @Corona WHERE identifier = @identifier',
+								{
+									['@Corona'] = 1,
+									['@identifier'] = xPlayer.identifier
+								})
+						end		
+					end)		
+				end	
+			elseif value < 300 then
+				if sans > 35 and sans < 60 then
+					local xPlayer = ESX.GetPlayerFromId(closePlayers[i].id)
+					MySQL.Async.fetchAll('SELECT Corona FROM users WHERE identifier = @identifier',{['@identifier'] = xPlayer.identifier},
+						function(result)
+						if result[1].Corona == 0 then
+							MySQL.Sync.execute('UPDATE users SET Corona = @Corona WHERE identifier = @identifier',
+								{
+									['@Corona'] = 1,
+									['@identifier'] = xPlayer.identifier
+								})
+						end		
+					end)		
+				end	
+			elseif value < 360 then
+				if sans > 30 and sans < 60 then
+					local xPlayer = ESX.GetPlayerFromId(closePlayers[i].id)
+					MySQL.Async.fetchAll('SELECT Corona FROM users WHERE identifier = @identifier',{['@identifier'] = xPlayer.identifier},
+						function(result)
+						if result[1].Corona == 0 then
+							MySQL.Sync.execute('UPDATE users SET Corona = @Corona WHERE identifier = @identifier',
+								{
+									['@Corona'] = 1,
+									['@identifier'] = xPlayer.identifier
+								})
+						end		
+					end)		
+				end		
+			elseif value >= 360 then
+				if sans > 25 and sans < 60 then
+					local xPlayer = ESX.GetPlayerFromId(closePlayers[i].id)
+					MySQL.Async.fetchAll('SELECT Corona FROM users WHERE identifier = @identifier',{['@identifier'] = xPlayer.identifier},
+						function(result)
+						if result[1].Corona == 0 then
+							MySQL.Sync.execute('UPDATE users SET Corona = @Corona WHERE identifier = @identifier',
+								{
+									['@Corona'] = 1,
+									['@identifier'] = xPlayer.identifier
+								})
+						end		
+					end)		
+				end	
 			end
-		elseif value < 120 then
-			if sans > 50 and sans < 60 then
-				local xPlayer = ESX.GetPlayerFromId(closePlayers[i].id)
-				MySQL.Async.fetchAll('SELECT Corona FROM users WHERE identifier = @identifier',{['@identifier'] = xPlayer.identifier},
-					function(result)
-					if result[1].Corona == 0 then
-						MySQL.Sync.execute('UPDATE users SET Corona = @Corona WHERE identifier = @identifier',
-							{
-								['@Corona'] = 1,
-								['@identifier'] = xPlayer.identifier
-							})
-					end		
-				end)		
-			end
-		elseif value < 180 then
-			if sans > 45 and sans < 60 then
-				local xPlayer = ESX.GetPlayerFromId(closePlayers[i].id)
-				MySQL.Async.fetchAll('SELECT Corona FROM users WHERE identifier = @identifier',{['@identifier'] = xPlayer.identifier},
-					function(result)
-					if result[1].Corona == 0 then
-						MySQL.Sync.execute('UPDATE users SET Corona = @Corona WHERE identifier = @identifier',
-							{
-								['@Corona'] = 1,
-								['@identifier'] = xPlayer.identifier
-							})
-					end		
-				end)		
-			end	
-		elseif value < 240 then
-			if sans > 40 and sans < 60 then
-				local xPlayer = ESX.GetPlayerFromId(closePlayers[i].id)
-				MySQL.Async.fetchAll('SELECT Corona FROM users WHERE identifier = @identifier',{['@identifier'] = xPlayer.identifier},
-					function(result)
-					if result[1].Corona == 0 then
-						MySQL.Sync.execute('UPDATE users SET Corona = @Corona WHERE identifier = @identifier',
-							{
-								['@Corona'] = 1,
-								['@identifier'] = xPlayer.identifier
-							})
-					end		
-				end)		
-			end	
-		elseif value < 300 then
-			if sans > 35 and sans < 60 then
-				local xPlayer = ESX.GetPlayerFromId(closePlayers[i].id)
-				MySQL.Async.fetchAll('SELECT Corona FROM users WHERE identifier = @identifier',{['@identifier'] = xPlayer.identifier},
-					function(result)
-					if result[1].Corona == 0 then
-						MySQL.Sync.execute('UPDATE users SET Corona = @Corona WHERE identifier = @identifier',
-							{
-								['@Corona'] = 1,
-								['@identifier'] = xPlayer.identifier
-							})
-					end		
-				end)		
-			end	
-		elseif value < 360 then
-			if sans > 30 and sans < 60 then
-				local xPlayer = ESX.GetPlayerFromId(closePlayers[i].id)
-				MySQL.Async.fetchAll('SELECT Corona FROM users WHERE identifier = @identifier',{['@identifier'] = xPlayer.identifier},
-					function(result)
-					if result[1].Corona == 0 then
-						MySQL.Sync.execute('UPDATE users SET Corona = @Corona WHERE identifier = @identifier',
-							{
-								['@Corona'] = 1,
-								['@identifier'] = xPlayer.identifier
-							})
-					end		
-				end)		
-			end		
-		elseif value >= 360 then
-			if sans > 25 and sans < 60 then
-				local xPlayer = ESX.GetPlayerFromId(closePlayers[i].id)
-				MySQL.Async.fetchAll('SELECT Corona FROM users WHERE identifier = @identifier',{['@identifier'] = xPlayer.identifier},
-					function(result)
-					if result[1].Corona == 0 then
-						MySQL.Sync.execute('UPDATE users SET Corona = @Corona WHERE identifier = @identifier',
-							{
-								['@Corona'] = 1,
-								['@identifier'] = xPlayer.identifier
-							})
-					end		
-				end)		
-			end	
 		end
 	end
 end)
