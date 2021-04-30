@@ -20,11 +20,6 @@ AddEventHandler('ExeLds:wearMask', function(durum)
         Citizen.Wait(1)
     end
 
-    RequestAnimDict('mp_masks@on_foot')
-    while not HasAnimDictLoaded('mp_masks@on_foot') do
-        Citizen.Wait(1)
-    end
-
 	if durum then
 		TriggerEvent('mythic_notify:client:SendAlert', { type = 'inform', text = 'Maske taktın', length = 3000, style = { ['background-color'] = '#0066CC', ['color'] = '#FFFFFF' } })
 		isMaskOn = true
