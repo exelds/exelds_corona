@@ -7,6 +7,42 @@ Citizen.CreateThread(function()
 	end
 end)
 
+local isMaskOn = false
+local maskNumber = 23
+local maskColorNumber = 1
+
+RegisterNetEvent('ExeLds:wearMask')
+AddEventHandler('ExeLds:wearMask', function(durum)
+	local playerPed = GetPlayerPed(-1)
+
+    RequestAnimDict('misscommon@std_take_off_masks')
+    while not HasAnimDictLoaded('misscommon@std_take_off_masks') do
+        Citizen.Wait(1)
+    end
+
+    RequestAnimDict('mp_masks@on_foot')
+    while not HasAnimDictLoaded('mp_masks@on_foot') do
+        Citizen.Wait(1)
+    end
+
+	if durum then
+		TriggerEvent('mythic_notify:client:SendAlert', { type = 'inform', text = 'Maske taktın', length = 3000, style = { ['background-color'] = '#0066CC', ['color'] = '#FFFFFF' } })
+		isMaskOn = true
+		TaskPlayAnim(playerPed, "misscommon@std_take_off_masks", "take_off_mask_rps", 3.5, -8, -1, 49, 0, 0, 0, 0)
+		Citizen.Wait(1000)
+		SetPedComponentVariation(playerPed, 1, maskNumber, maskColorNumber, 2)
+		ClearPedTasks(playerPed)
+	else
+		TriggerEvent('mythic_notify:client:SendAlert', { type = 'inform', text = 'Maskeyi çıkarttın', length = 3000, style = { ['background-color'] = '#0066CC', ['color'] = '#FFFFFF' } })
+		isMaskOn = false		
+		TaskPlayAnim(playerPed, "misscommon@std_take_off_masks", "take_off_mask_rps", 3.5, -8, -1, 49, 0, 0, 0, 0)
+		Citizen.Wait(1000)
+		SetPedComponentVariation(playerPed, 1, 0, 0, 2)
+		ClearPedTasks(playerPed)
+	end
+
+end)
+
 RegisterNetEvent('ExeLds:covidTest')
 AddEventHandler('ExeLds:covidTest', function()
 	local playerPed = PlayerPedId()
@@ -133,28 +169,10 @@ local infected = 0
 Citizen.CreateThread(function()
 	while true do
 		Citizen.Wait(10000)		
-		
-		ESX.TriggerServerCallback('ExeLds:getInfectInfo', function(result)
-		infected = result
-			if result > 0 then			
-				local playerPed = PlayerPedId()
-				local playerCoords = GetEntityCoords(playerPed)
-				local players = ESX.Game.GetPlayersInArea(playerCoords, infectDistance)
-				local closePlayers = {}
-				for i = 1, #players, 1 do
-					if players[i] ~= PlayerId() then
-						table.insert(
-							closePlayers,
-							 {
-								id = GetPlayerServerId(players[i])
-							 }
-						)
-					end
-				end
-				TriggerServerEvent("ExeLds:infectPlayer", playerCoords, closePlayers, result)								
-			else
-				local randomBulasma = math.random(1,100)
-				if randomBulasma >= 75 and randomBulasma <= 80 then
+		if not isMaskOn then
+			ESX.TriggerServerCallback('ExeLds:getInfectInfo', function(result)
+			infected = result
+				if result > 0 then			
 					local playerPed = PlayerPedId()
 					local playerCoords = GetEntityCoords(playerPed)
 					local players = ESX.Game.GetPlayersInArea(playerCoords, infectDistance)
@@ -163,16 +181,35 @@ Citizen.CreateThread(function()
 						if players[i] ~= PlayerId() then
 							table.insert(
 								closePlayers,
-								 {
+								{
 									id = GetPlayerServerId(players[i])
-								 }
+								}
 							)
 						end
 					end
-					TriggerServerEvent("ExeLds:infectPlayer", playerCoords, closePlayers, 10)	
-				end
-			end	
-		end)	
+					TriggerServerEvent("ExeLds:infectPlayer", playerCoords, closePlayers, result)								
+				else
+					local randomBulasma = math.random(1,100)
+					if randomBulasma >= 75 and randomBulasma <= 80 then
+						local playerPed = PlayerPedId()
+						local playerCoords = GetEntityCoords(playerPed)
+						local players = ESX.Game.GetPlayersInArea(playerCoords, infectDistance)
+						local closePlayers = {}
+						for i = 1, #players, 1 do
+							if players[i] ~= PlayerId() then
+								table.insert(
+									closePlayers,
+									{
+										id = GetPlayerServerId(players[i])
+									}
+								)
+							end
+						end
+						TriggerServerEvent("ExeLds:infectPlayer", playerCoords, closePlayers, 10)	
+					end
+				end	
+			end)	
+		end
 	end	
 end)
 
